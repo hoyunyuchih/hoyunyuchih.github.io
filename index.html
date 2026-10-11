@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@400&display=swap">
 <style>
-/* Layout: one dark column; hero = text beside a live sketch of a Kerr hole; research = a numbered series, each paper a result line + its figure on a paper-white plate. Single dark look by choice. */
+/* Layout: full-bleed Kerr stage with text and event panel floating over it; research = a numbered series, each paper a result line + its figure on a paper-white plate. Single dark look by choice. */
 :root {
   --void: #0b0d13;
   --surface: #12151d;
@@ -24,6 +24,7 @@
   --ergo: #a6dcbc;
   --plain: #27408f;
   --bound: #e9cf9a;
+  --veil: rgba(11, 13, 19, .74);
   --serif: "Newsreader", "Iowan Old Style", Georgia, serif;
   --sans: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
   --mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
@@ -35,38 +36,53 @@ html { scroll-behavior: smooth; }
 body {
   background: var(--void); color: var(--ink);
   font: 17px/1.6 var(--sans);
-  padding-inline: 20px; padding-block: 0;
+  padding: 0;
 }
 a { color: var(--ember); text-decoration: none; }
 a:hover { text-decoration: underline; text-underline-offset: 3px; }
 a:focus-visible { outline: 2px solid var(--ember); outline-offset: 3px; border-radius: 2px; }
-.wrap { max-width: 1040px; margin-inline: auto; }
+.wrap { max-width: 1080px; margin-inline: auto; padding-inline: 20px; }
 
 nav.top {
   display: flex; justify-content: space-between; align-items: center; gap: 16px;
-  padding-block: 22px; border-bottom: 1px solid var(--line);
+  padding-block: 22px;
   font: 13px/1 var(--mono); letter-spacing: .04em; color: var(--muted);
 }
 nav.top .links { display: flex; gap: 20px; }
 nav.top a { color: var(--muted); }
 nav.top a:hover { color: var(--ink); }
 
-.hero {
-  display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr);
-  gap: 40px; align-items: center; padding-block: 64px 56px;
+/* Full-bleed stage: the Kerr diagram fills the first screen; text and the event panel float over it */
+.stage { position: relative; min-height: 100svh; overflow: hidden; }
+.stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; cursor: crosshair; }
+.stage-inner {
+  position: relative; min-height: 100svh; max-width: 1220px; margin-inline: auto; padding-inline: 20px;
+  display: flex; flex-direction: column; pointer-events: none;
 }
-.hero h1 {
+.stage-inner > * { pointer-events: auto; }
+.intro-block { margin-block: auto; max-width: 520px; padding-block: 40px 120px; text-shadow: 0 0 18px var(--void), 0 0 4px var(--void); }
+.panel {
+  position: absolute; right: 20px; bottom: 28px; width: min(380px, calc(100% - 40px));
+  max-height: 72svh; overflow: auto; padding: 14px 16px;
+  background: var(--veil); border: 1px solid var(--line); border-radius: 8px;
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+}
+.panel .hint { margin: 0; font: 12px/1.5 var(--mono); color: var(--ergo); }
+.panel .cap { margin: 12px 0 0; font: 12px/1.5 var(--mono); color: var(--muted); }
+.scroll-cue { position: absolute; left: 20px; bottom: 28px; font: 12px/1 var(--mono); letter-spacing: .06em; color: var(--muted); }
+.scroll-cue:hover { color: var(--ink); text-decoration: none; }
+.intro-block h1 {
   font: 400 clamp(44px, 7vw, 76px)/1 var(--serif);
   letter-spacing: -.015em; margin: 0 0 22px; text-wrap: balance;
 }
-.hero .lede {
+.intro-block .lede {
   font: 400 clamp(20px, 2.3vw, 24px)/1.4 var(--serif);
   max-width: 34ch; margin: 0 0 22px; color: var(--ink);
 }
 .arc { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 8px 18px; margin: 0 0 26px; max-width: 46ch; }
 .arc dt { font: 12px/1.9 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ember); }
 .arc dd { margin: 0; }
-.hero .meta { color: var(--muted); margin: 0 0 28px; }
+.intro-block .meta { color: var(--muted); margin: 0 0 28px; }
 .links-row { display: flex; flex-wrap: wrap; gap: 10px; }
 .chip {
   display: inline-flex; align-items: center; gap: 8px;
@@ -76,9 +92,7 @@ nav.top a:hover { color: var(--ink); }
 .chip:hover { border-color: var(--ember); color: var(--ember); text-decoration: none; }
 .email { font: 14px/1.4 var(--mono); color: var(--muted); margin-top: 14px; user-select: all; }
 
-.sketch { margin: 0; max-width: 100%; }
-.sketch canvas { width: 100%; aspect-ratio: 4 / 3; display: block; }
-.verdict-line { margin: 14px 0 0; font: 13px/1.5 var(--mono); color: var(--muted); }
+.verdict-line { margin: 8px 0 0; font: 13px/1.5 var(--mono); color: var(--muted); }
 .verdict-line b { color: var(--ink); font-weight: 400; }
 .verdict-line .esc { color: var(--escape); }
 .verdict-line .fall { color: var(--fall); }
@@ -105,10 +119,6 @@ nav.top a:hover { color: var(--ink); }
 .seg button[aria-pressed="true"] { color: var(--void); background: var(--ember); border-color: var(--ember); }
 .seg button:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px; }
 .controls .note { margin: 0; min-height: 2.8em; }
-.sketch figcaption {
-  margin-top: 8px; font: 12px/1.4 var(--mono); color: var(--muted);
-}
-
 section.research { padding-block: 40px 72px; border-top: 1px solid var(--line); }
 .sec-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 8px; }
 .sec-head h2 { font: 400 40px/1.1 var(--serif); margin: 0; }
@@ -135,22 +145,27 @@ section.research { padding-block: 40px 72px; border-top: 1px solid var(--line); 
 footer { border-top: 1px solid var(--line); padding-block: 28px 40px; color: var(--muted); font: 13px/1.6 var(--mono); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; }
 
 @media (max-width: 820px) {
-  .hero { grid-template-columns: minmax(0, 1fr); padding-block: 40px; }
-  .sketch { max-width: 420px; width: 100%; margin-inline: auto; }
+  .stage { min-height: 0; }
+  .stage canvas { position: relative; height: 46svh; min-height: 300px; }
+  .stage-inner { position: static; min-height: 0; display: block; }
+  nav.top { position: absolute; top: 0; left: 20px; right: 20px; }
+  .intro-block { padding-block: 8px 0; max-width: none; }
+  .panel { position: static; width: auto; max-height: none; margin-block: 24px 32px; }
+  .scroll-cue { display: none; }
   .paper { grid-template-columns: minmax(0, 1fr); gap: 16px; }
 }
 </style>
 </head>
 <body>
 
-<div class="wrap">
-  <nav class="top" aria-label="Site">
-    <span>H.-Y. YuChih</span>
-    <span class="links"><a href="#research">Research</a><a href="#contact">Contact</a></span>
-  </nav>
-
-  <header class="hero">
-    <div>
+<header class="stage" id="top">
+  <canvas id="kerr" aria-label="Equatorial plane of a Kerr black hole: horizon and ergosphere, with plasma plunging from the ISCO into the horizon. Click inside the ergosphere to set off a reconnection event."></canvas>
+  <div class="stage-inner">
+    <nav class="top" aria-label="Site">
+      <span>H.-Y. YuChih</span>
+      <span class="links"><a href="#research">Research</a><a href="#contact">Contact</a></span>
+    </nav>
+    <div class="intro-block">
       <h1>Ho-Yun YuChih</h1>
       <p class="lede">I work on rotating black holes and their surroundings.</p>
       <dl class="arc">
@@ -165,13 +180,13 @@ footer { border-top: 1px solid var(--line); padding-block: 28px 40px; color: var
       </div>
       <p class="email">hoyun.yu.chih@gmail.com</p>
     </div>
-    <figure class="sketch">
-      <canvas id="kerr" aria-label="Equatorial plane of a Kerr black hole with spin 0.9: horizon, photon orbit, ergosphere and ISCO, with fluid elements plunging from the ISCO into the horizon"></canvas>
-      <figcaption id="kerr-cap">Click the disk to place a reconnection point; each click draws a random orientation angle ξ_B, as in the covering-factor estimate. Bulk plasma follows the combined streamline used in my papers: circular outside the ISCO, then the plunging solution of Mummery &amp; Balbus (2022). Seen 30° above the equatorial plane, no light bending; arrows show ejection directions in the fluid frame, and the plasmoids then follow geodesics · r in GM/c²</figcaption>
+    <aside class="panel" aria-label="Reconnection event">
+      <p class="hint">Click inside the green ring to set off a reconnection event.</p>
       <p class="verdict-line" id="verdict" aria-live="polite"></p>
       <p class="tally" id="tally" hidden></p>
       <details class="calc" id="calc">
         <summary>Show the calculation and parameters</summary>
+        <p class="cap">Click the disk to place a reconnection point; each click draws a random orientation angle ξ_B, as in the covering-factor estimate. Bulk plasma follows the combined streamline used in my papers: circular outside the ISCO, then the plunging solution of Mummery &amp; Balbus (2022). Seen 30° above the equatorial plane, no light bending; arrows show ejection directions in the fluid frame, and the plasmoids then follow geodesics · r in GM/c²</p>
         <div class="readout" id="readout"></div>
       <div class="controls">
           <label for="spin">spin a <output id="spin-out"></output></label>
@@ -189,8 +204,12 @@ footer { border-top: 1px solid var(--line); padding-block: 28px 40px; color: var
           </div>
         </div>
       </details>
-    </figure>
-  </header>
+    </aside>
+    <a class="scroll-cue" href="#research">Research ↓</a>
+  </div>
+</header>
+
+<div class="wrap">
 
   <section class="research" id="research">
     <div class="sec-head">
@@ -402,13 +421,14 @@ footer { border-top: 1px solid var(--line); padding-block: 28px 40px; color: var
   const TAIL = 3.2, RATE = 4;   // one clock for the flow and the plasmoids: M of ingoing time per second
 
   const EL = 30 * Math.PI / 180, SE = Math.sin(EL);
-  let W, H, S, cx, cy;
+  let W, H, S, cx, cy, wide;
   function size() {
     const d = Math.min(devicePixelRatio || 1, 2);
-    W = cv.getBoundingClientRect().width; H = W * 3 / 4;
+    const b = cv.getBoundingClientRect(); W = b.width; H = b.height;
     cv.width = W * d; cv.height = H * d;
     ctx.setTransform(d, 0, 0, d, 0, 0);
-    cx = W / 2; cy = H / 2;
+    wide = W > 820;
+    cx = wide ? W * 0.66 : W / 2; cy = wide ? H * 0.45 : H * 0.55;
   }
   const proj = (r, ph) => { const X = r*Math.cos(ph), Y = r*Math.sin(ph); return [cx + X*S, cy - Y*SE*S, Y]; };
   const projXY = (X, Y) => [cx + X*S, cy - Y*SE*S, Y];
@@ -462,7 +482,7 @@ footer { border-top: 1px solid var(--line); padding-block: 28px 40px; color: var
   const resetTally = () => { tally.n = 0; tally.ok = 0; showTally(); };
   function draw(T) {
     if (!(W > 40)) { size(); if (!(W > 40)) return; }   // canvas not laid out yet
-    S = (W / 2 - 10) / rMax;
+    S = wide ? Math.min(W * 0.30, H * 0.85) / rMax : (W / 2 - 14) / rMax;
     ctx.clearRect(0, 0, W, H);
     const g = ctx.createRadialGradient(cx, cy, rH*S*0.2, cx, cy, rH*S);
     g.addColorStop(0, '#000'); g.addColorStop(1, '#05060a');
