@@ -103,6 +103,10 @@ a:focus-visible { outline: 2px solid var(--ember); outline-offset: 3px; border-r
 main { padding-block: 24px 8px; }
 main.col { max-width: 1040px; }
 .twocol { column-count: 2; column-gap: 40px; }
+.intro-grid { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 32px; align-items: start; }
+.portrait { margin: 0; }
+.portrait img { display: block; width: 100%; height: auto; border-radius: 2px; }
+.intro-grid p { text-indent: 0; margin: 0; }
 .twocol p:first-child { margin-top: 0; }
 .subgrid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px 40px; align-items: start; }
 .subgrid .subsec h3 { margin-top: 18px; }
@@ -130,6 +134,8 @@ h2 { font: 600 15px/1.3 var(--serif); letter-spacing: .1em; text-align: center; 
 
 @media (max-width: 760px) {
   .twocol, .refs ol { column-count: 1; }
+  .intro-grid { grid-template-columns: minmax(0, 1fr); }
+  .portrait { max-width: 220px; }
   .subgrid { grid-template-columns: minmax(0, 1fr); }
 }
 @media (max-width: 640px) {
@@ -190,8 +196,9 @@ h2 { font: 600 15px/1.3 var(--serif); letter-spacing: .1em; text-align: center; 
   <main class="col">
     <section id="intro">
       <h2><span class="sec-n">I.</span> INTRODUCTION</h2>
-      <div class="twocol">
-      <p>I work on rotating black holes and what surrounds them. My master's research asked when magnetic reconnection near a Kerr black hole can extract its rotational energy, and found that in a Lorentz-violating bumblebee spacetime this kind of process cannot distinguish the violation from spin. That points me toward gravitational waves: how black-hole environments imprint on them, and whether those imprints can be separated from spin or from departures from general relativity. I am applying for PhD positions starting in 2027.</p>
+      <div class="intro-grid">
+        <figure class="portrait"><img src="img/portrait.jpg" alt="Portrait of Ho-Yun YuChih" width="720" height="960"></figure>
+        <p>I work on rotating black holes and what surrounds them. My master's research asked when magnetic reconnection near a Kerr black hole can extract its rotational energy, and found that in a Lorentz-violating bumblebee spacetime this kind of process cannot distinguish the violation from spin. That points me toward gravitational waves: how black-hole environments imprint on them, and whether those imprints can be separated from spin or from departures from general relativity. I am applying for PhD positions starting in 2027.</p>
       </div>
     </section>
 
@@ -241,7 +248,7 @@ h2 { font: 600 15px/1.3 var(--serif); letter-spacing: .1em; text-align: center; 
 
     <section id="ack">
       <h2 class="ack-h">ACKNOWLEDGMENTS</h2>
-      <div class="twocol"><p>The author co-founded, and serves as Vice Chairman of, the Taiwan Youth Science Development Association, and writes popular science in Traditional Chinese on black holes, symmetry, superradiance and dark matter. A talk at the Taiwan Youth Science Development Forum is scheduled for December 2026.</p></div>
+      <div class="twocol"><p>The author co-founded, and serves as Vice Chairman of, the Taiwan Youth Science Development Association, and writes popular-science articles in Chinese on black holes, symmetry, superradiance and dark matter for <i>Fengyun Zhisheng</i> (风云之声), a science-communication platform on WeChat run by Yuan Lanfeng of the University of Science and Technology of China. A talk at the Taiwan Youth Science Development Forum is scheduled for December 2026.</p></div>
     </section>
 
     <section id="refs" class="refs">
