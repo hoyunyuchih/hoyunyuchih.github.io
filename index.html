@@ -103,6 +103,10 @@ a:focus-visible { outline: 2px solid var(--ember); outline-offset: 3px; border-r
 main { padding-block: 24px 8px; }
 main.col { max-width: 1040px; }
 .twocol { column-count: 2; column-gap: 40px; }
+.authorbio { margin-top: 36px; padding-top: 22px; border-top: 1px solid var(--line); font-size: 15px; line-height: 1.55; display: flow-root; }
+.authorbio img { float: left; width: 112px; height: auto; margin: 4px 18px 6px 0; border-radius: 2px; }
+.authorbio p { margin: 0; text-indent: 0; text-align: justify; }
+.authorbio b { font-weight: 600; }
 .intro-grid { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 32px; align-items: start; }
 .portrait { margin: 0; }
 .portrait img { display: block; width: 100%; height: auto; border-radius: 2px; }
@@ -164,7 +168,7 @@ h2 { font: 600 15px/1.3 var(--serif); letter-spacing: .1em; text-align: center; 
     <canvas id="kerr" aria-label="Equatorial plane of a Kerr black hole: horizon and ergosphere, with plasma plunging from the ISCO into the horizon. Click inside the ergosphere to set off a reconnection event."></canvas>
     <figcaption class="col">
       <p class="figcap">Reconnection events in the ergoregion of a Kerr black hole. Click inside the green ring: a plasmoid pair is ejected, and the one that carries energy to infinity glows. Plasma follows the combined streamline of Refs. <a class="cite" href="#ref-1">[1]</a>, <a class="cite" href="#ref-4">[4]</a>.</p>
-      <p class="doi">CV: <a href="cv.pdf">cv.pdf</a> · INSPIRE: <a href="https://inspirehep.net/authors?q=YuChih" target="_blank" rel="noopener">YuChih</a> · ORCID: <a href="https://orcid.org/0009-0009-4226-4438" target="_blank" rel="noopener">0009-0009-4226-4438</a></p>
+      <p class="doi">CV: <a href="cv.html">cv</a> · INSPIRE: <a href="https://inspirehep.net/authors?q=YuChih" target="_blank" rel="noopener">YuChih</a> · ORCID: <a href="https://orcid.org/0009-0009-4226-4438" target="_blank" rel="noopener">0009-0009-4226-4438</a></p>
 
       <p class="hint">Click inside the green ring to set off a reconnection event.</p>
       <p class="verdict-line" id="verdict" aria-live="polite"></p>
@@ -196,9 +200,8 @@ h2 { font: 600 15px/1.3 var(--serif); letter-spacing: .1em; text-align: center; 
   <main class="col">
     <section id="intro">
       <h2><span class="sec-n">I.</span> INTRODUCTION</h2>
-      <div class="intro-grid">
-        <figure class="portrait"><img src="img/portrait.jpg" alt="Portrait of Ho-Yun YuChih" width="720" height="960"></figure>
-        <p>I work on rotating black holes and what surrounds them. My master's research asked when magnetic reconnection near a Kerr black hole can extract its rotational energy, and found that in a Lorentz-violating bumblebee spacetime this kind of process cannot distinguish the violation from spin. That points me toward gravitational waves: how black-hole environments imprint on them, and whether those imprints can be separated from spin or from departures from general relativity. I am applying for PhD positions starting in 2027.</p>
+      <div class="twocol">
+      <p>I work on rotating black holes and what surrounds them. My master's research asked when magnetic reconnection near a Kerr black hole can extract its rotational energy, and found that in a Lorentz-violating bumblebee spacetime this kind of process cannot distinguish the violation from spin. That points me toward gravitational waves: how black-hole environments imprint on them, and whether those imprints can be separated from spin or from departures from general relativity. I am applying for PhD positions starting in 2027.</p>
       </div>
     </section>
 
@@ -260,6 +263,11 @@ h2 { font: 600 15px/1.3 var(--serif); letter-spacing: .1em; text-align: center; 
       </ol>
       <p class="eq">*These authors contributed equally.</p>
     </section>
+    <section class="authorbio" aria-label="About the author">
+      <img src="img/portrait.jpg" alt="Portrait of Ho-Yun YuChih" width="720" height="960">
+      <p><b>Ho-Yun YuChih</b> received the B.S. degree in materials science (physics track) from Duke Kunshan University, Kunshan, China, in 2022, and the M.S. degree in theoretical physics from Peking University, Beijing, China, in 2026. Research interests include energy extraction from rotating black holes, Lorentz symmetry breaking in strong gravity, and the imprints of black-hole environments on gravitational waves. Outside research, Ho-Yun co-founded the Taiwan Youth Science Development Association and writes popular science in Chinese for <i>Fengyun Zhisheng</i> (风云之声), a science-communication platform on WeChat.</p>
+    </section>
+
   </main>
 
   <footer class="col pfoot" id="contact">
