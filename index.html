@@ -165,6 +165,7 @@ h2 { font: 600 15px/1.3 var(--serif); letter-spacing: .1em; text-align: center; 
   </div>
 
   <figure class="fig fig1 abstract-fig" id="abstract" aria-label="Abstract">
+    <canvas id="fly" aria-hidden="true" style="position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:20"></canvas>
     <canvas id="kerr" aria-label="Equatorial plane of a Kerr black hole: horizon and ergosphere, with plasma plunging from the ISCO into the horizon. Click inside the ergosphere to set off a reconnection event."></canvas>
     <figcaption class="col">
       <p class="figcap">Reconnection events in the ergoregion of a Kerr black hole. Click inside the green ring: a plasmoid pair is ejected, and the one that carries energy to infinity glows. Plasma follows the combined streamline of Refs. <a class="cite" href="#ref-1">[1]</a>, <a class="cite" href="#ref-4">[4]</a>.</p>
@@ -280,6 +281,8 @@ h2 { font: 600 15px/1.3 var(--serif); letter-spacing: .1em; text-align: center; 
 (() => {
   const $ = id => document.getElementById(id);
   const cv = $('kerr'), ctx = cv.getContext('2d');
+  const fly = $('fly'), fctx = fly.getContext('2d');
+  let FW = 0, FH = 0, flyDirty = false, rFar = 30, SF = 0, BX = 0, BY = 0;
   const css = getComputedStyle(document.documentElement);
   const tok = (n, f) => css.getPropertyValue(n).trim() || f;
   const EMBER = tok('--ember', '#f0a560'), MUTED = tok('--muted', '#9b9cab'), INK = tok('--ink', '#ece8e0'), COLD = tok('--cold', '#7fb0e6'), ESC = tok('--escape', '#d8d6ff'), FALL = tok('--fall', '#e2564b'), BOUND = tok('--bound', '#e9cf9a'), ERGO = tok('--ergo', '#a6dcbc'), PLAIN = tok('--plain', '#27408f');
@@ -387,9 +390,9 @@ h2 { font: 600 15px/1.3 var(--serif); letter-spacing: .1em; text-align: center; 
     };
     let r = st.r0, pr = st.r0*st.r0*p.ur, ph = 0, v = 0;
     const V = [0], Rr = [r], Ph = [0];
-    let end = 'bound';
-    for (let n = 0; n < 6000; n++) {
-      const d0 = f(r, pr), dl = 0.04 / Math.max(Math.abs(d0[3]), 1e-3);
+    let end = 'bound', out = false;
+    for (let n = 0; n < 12000; n++) {
+      const d0 = f(r, pr), dl = 0.04 * Math.max(1, r/4) / Math.max(Math.abs(d0[3]), 1e-3);
       const k1 = d0;
       const k2 = f(r + dl/2*k1[0], pr + dl/2*k1[1]);
       const k3 = f(r + dl/2*k2[0], pr + dl/2*k2[1]);
@@ -400,9 +403,15 @@ h2 { font: 600 15px/1.3 var(--serif); letter-spacing: .1em; text-align: center; 
       v += dl/6*(k1[3] + 2*k2[3] + 2*k3[3] + k4[3]);
       V.push(v); Rr.push(r); Ph.push(ph);
       if (r < rH + 0.003) { end = 'hole'; break; }
-      if (r > rMax * 1.6) { end = 'escape'; break; }
-      if (v > 120) break;
+      if (r > rMax * 1.6) {   // past the diagram: stop once it has left the screen
+        out = true;
+        const q = st.ph0 + ph, sx = BX + r*Math.cos(q)*SF, sy = BY - r*Math.sin(q)*SE*SF;
+        if (sx < -60 || sx > innerWidth + 60 || sy < -60 || sy > innerHeight + 60) { end = 'escape'; break; }
+      }
+      if (r > rFar) { end = 'escape'; break; }
+      if (v > 400) break;
     }
+    if (end === 'bound' && out) end = 'escape';   // colour as before: left the drawn region
     return { V, R: Rr, P: Ph, end, vEnd: v };
   }
   const onTraj = (tr, v) => {
@@ -425,6 +434,14 @@ h2 { font: 600 15px/1.3 var(--serif); letter-spacing: .1em; text-align: center; 
     ctx.setTransform(d, 0, 0, d, 0, 0);
     wide = W > 820;
     cx = W / 2; cy = H / 2;
+    FW = innerWidth; FH = innerHeight;
+    fly.width = FW * d; fly.height = FH * d;
+    fctx.setTransform(d, 0, 0, d, 0, 0);
+  }
+  function setFar() {
+    const Sx = wide ? Math.min(W * 0.46, H * 0.98) / rMax : (W / 2 - 14) / rMax;
+    rFar = Math.max(rMax * 1.6, 1.15 * Math.hypot(innerWidth, innerHeight) / (Sx * SE));
+    const b = cv.getBoundingClientRect(); SF = Sx; BX = b.left + W/2; BY = b.top + H/2;
   }
   const proj = (r, ph) => { const X = r*Math.cos(ph), Y = r*Math.sin(ph); return [cx + X*S, cy - Y*SE*S, Y]; };
   const projXY = (X, Y) => [cx + X*S, cy - Y*SE*S, Y];
@@ -530,15 +547,21 @@ h2 { font: 600 15px/1.3 var(--serif); letter-spacing: .1em; text-align: center; 
       ctx.globalAlpha = 1;
       }
       const te = Math.max(0, T - tEject);
-      blob(res.trP, te, fateColor(res.trP, true));
-      blob(res.trM, te, fateColor(res.trM, false));
-    }
+      const b = cv.getBoundingClientRect();
+      if (flyDirty) { fctx.clearRect(0, 0, FW, FH); flyDirty = false; }
+      blob(res.trP, te, fateColor(res.trP, true), b.left, b.top);
+      blob(res.trM, te, fateColor(res.trM, false), b.left, b.top);
+    } else if (flyDirty) { fctx.clearRect(0, 0, FW, FH); flyDirty = false; }
     ctx.fillStyle = INK; ctx.beginPath(); ctx.arc(px, py, 3, 0, Math.PI*2); ctx.fill();
   }
-  function blob(tr, te, color) {
+  function blob(tr, te, color, ox, oy) {
     if (te > tr.vEnd) return;
+    flyDirty = true;
     const v1 = Math.max(0, te - 2.5);
     let prev = null;
+    const c0 = ctx, ctx_ = fctx;
+    ctx_.save(); ctx_.translate(ox, oy);
+    { const ctx = ctx_;
     ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineCap = 'round';
     for (let k = 0; k <= 14; k++) {
       const [r, ph] = onTraj(tr, v1 + (te - v1) * k / 14);
@@ -555,6 +578,8 @@ h2 { font: 600 15px/1.3 var(--serif); letter-spacing: .1em; text-align: center; 
       ctx.beginPath(); ctx.arc(prev[0], prev[1], 3.6, 0, Math.PI*2); ctx.fill(); ctx.shadowBlur = 0;
     }
     ctx.globalAlpha = 1;
+    }
+    ctx_.restore();
   }
 
   function readout() {
@@ -592,7 +617,7 @@ h2 { font: 600 15px/1.3 var(--serif); letter-spacing: .1em; text-align: center; 
       (neg ? '<span>' + floor + '</span>' : '');
   }
 
-  function sync() { readout(); tEject = T; draw(T); }
+  function sync() { setFar(); readout(); tEject = T; draw(T); }
   $('spin').addEventListener('input', e => { st.a = +e.target.value; build(); resetTally(); sync(); });
   $('r0').addEventListener('input', e => { st.r0 = +e.target.value; sync(); });
   $('xi').addEventListener('input', e => { st.xi = +e.target.value; $('xi-fix').checked = true; sync(); });
@@ -618,13 +643,13 @@ h2 { font: 600 15px/1.3 var(--serif); letter-spacing: .1em; text-align: center; 
   function tick(t) {
     requestAnimationFrame(tick);
     T += Math.min(50, t - last) / 1000 * RATE; last = t;
-    if (res && !res.noOrbit && T - tEject > Math.min(Math.max(res.trP.vEnd, res.trM.vEnd), 60) + 6) tEject = T;   // eject again
+    if (res && !res.noOrbit && T - tEject > Math.min(Math.max(res.trP.vEnd, res.trM.vEnd), 200) + 6) tEject = T;   // eject again
     try { draw(T); } catch (err) { console.error(err); }
   }
   addEventListener('resize', () => { size(); draw(T); });
   if ('ResizeObserver' in window) new ResizeObserver(() => { size(); draw(T); }).observe(cv);
   st.a = +$('spin').value; st.sig = Math.pow(10, +$('sig').value); st.xi = +$('xi').value;
-  build(); size(); readout(); draw(0);
+  build(); size(); setFar(); readout(); draw(0);
   if (!reduce) requestAnimationFrame(tick);
 })();
 </script>
