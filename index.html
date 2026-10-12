@@ -282,7 +282,7 @@ h2 { font: 600 15px/1.3 var(--serif); letter-spacing: .1em; text-align: center; 
   const $ = id => document.getElementById(id);
   const cv = $('kerr'), ctx = cv.getContext('2d');
   const fly = $('fly'), fctx = fly.getContext('2d');
-  let FW = 0, FH = 0, flyDirty = false, rFar = 30, SF = 0, BX = 0, BY = 0;
+  let FW = 0, FH = 0, flyDirty = false, rFar = 30, SF = 0, BX = 0, BY = 0, DW = 0, DH = 0;
   const css = getComputedStyle(document.documentElement);
   const tok = (n, f) => css.getPropertyValue(n).trim() || f;
   const EMBER = tok('--ember', '#f0a560'), MUTED = tok('--muted', '#9b9cab'), INK = tok('--ink', '#ece8e0'), COLD = tok('--cold', '#7fb0e6'), ESC = tok('--escape', '#d8d6ff'), FALL = tok('--fall', '#e2564b'), BOUND = tok('--bound', '#e9cf9a'), ERGO = tok('--ergo', '#a6dcbc'), PLAIN = tok('--plain', '#27408f');
@@ -391,7 +391,7 @@ h2 { font: 600 15px/1.3 var(--serif); letter-spacing: .1em; text-align: center; 
     let r = st.r0, pr = st.r0*st.r0*p.ur, ph = 0, v = 0;
     const V = [0], Rr = [r], Ph = [0];
     let end = 'bound', out = false;
-    for (let n = 0; n < 12000; n++) {
+    for (let n = 0; n < 20000; n++) {
       const d0 = f(r, pr), dl = 0.04 * Math.max(1, r/4) / Math.max(Math.abs(d0[3]), 1e-3);
       const k1 = d0;
       const k2 = f(r + dl/2*k1[0], pr + dl/2*k1[1]);
@@ -403,13 +403,13 @@ h2 { font: 600 15px/1.3 var(--serif); letter-spacing: .1em; text-align: center; 
       v += dl/6*(k1[3] + 2*k2[3] + 2*k3[3] + k4[3]);
       V.push(v); Rr.push(r); Ph.push(ph);
       if (r < rH + 0.003) { end = 'hole'; break; }
-      if (r > rMax * 1.6) {   // past the diagram: stop once it has left the screen
+      if (r > rMax * 1.6) {   // past the diagram: fly on over the page, stop once it leaves the page
         out = true;
         const q = st.ph0 + ph, sx = BX + r*Math.cos(q)*SF, sy = BY - r*Math.sin(q)*SE*SF;
-        if (sx < -60 || sx > innerWidth + 60 || sy < -60 || sy > innerHeight + 60) { end = 'escape'; break; }
+        if (sx < -60 || sx > DW + 60 || sy < -60 || sy > DH + 60) { end = 'escape'; break; }
       }
       if (r > rFar) { end = 'escape'; break; }
-      if (v > 400) break;
+      if (v > 2000) break;
     }
     if (end === 'bound' && out) end = 'escape';   // colour as before: left the drawn region
     return { V, R: Rr, P: Ph, end, vEnd: v };
@@ -440,8 +440,9 @@ h2 { font: 600 15px/1.3 var(--serif); letter-spacing: .1em; text-align: center; 
   }
   function setFar() {
     const Sx = wide ? Math.min(W * 0.46, H * 0.98) / rMax : (W / 2 - 14) / rMax;
-    rFar = Math.max(rMax * 1.6, 1.15 * Math.hypot(innerWidth, innerHeight) / (Sx * SE));
-    const b = cv.getBoundingClientRect(); SF = Sx; BX = b.left + W/2; BY = b.top + H/2;
+    const de = document.documentElement; DW = de.scrollWidth; DH = de.scrollHeight;
+    rFar = Math.max(rMax * 1.6, 1.15 * Math.hypot(DW, DH) / (Sx * SE));
+    const b = cv.getBoundingClientRect(); SF = Sx; BX = b.left + scrollX + W/2; BY = b.top + scrollY + H/2;   // hole centre in page coordinates
   }
   const proj = (r, ph) => { const X = r*Math.cos(ph), Y = r*Math.sin(ph); return [cx + X*S, cy - Y*SE*S, Y]; };
   const projXY = (X, Y) => [cx + X*S, cy - Y*SE*S, Y];
@@ -643,7 +644,7 @@ h2 { font: 600 15px/1.3 var(--serif); letter-spacing: .1em; text-align: center; 
   function tick(t) {
     requestAnimationFrame(tick);
     T += Math.min(50, t - last) / 1000 * RATE; last = t;
-    if (res && !res.noOrbit && T - tEject > Math.min(Math.max(res.trP.vEnd, res.trM.vEnd), 200) + 6) tEject = T;   // eject again
+    if (res && !res.noOrbit && T - tEject > Math.min(Math.max(res.trP.vEnd, res.trM.vEnd), 2000) + 6) tEject = T;   // eject again
     try { draw(T); } catch (err) { console.error(err); }
   }
   addEventListener('resize', () => { size(); draw(T); });
