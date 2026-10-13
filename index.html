@@ -281,6 +281,12 @@ h2 { font: 600 15px/1.3 var(--serif); letter-spacing: .1em; text-align: center; 
 </div>
 
 <script>
+/* always open at the top of the page, even after a reload or a #section link */
+if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+if (location.hash) history.replaceState(null, '', location.pathname + location.search);
+scrollTo(0, 0); addEventListener('load', () => scrollTo(0, 0));
+</script>
+<script>
 (() => {
   const $ = id => document.getElementById(id);
   const cv = $('kerr'), ctx = cv.getContext('2d');
