@@ -79,8 +79,11 @@ a:focus-visible { outline: 2px solid var(--ember); outline-offset: 3px; border-r
 .verdict-line b { color: var(--ink); font-weight: 400; }
 .verdict-line .esc { color: var(--escape); }
 .verdict-line .fall { color: var(--fall); }
-.tally { margin: 4px 0 0; font: 12px/1.5 var(--mono); color: var(--muted); }
-.tally b { color: var(--escape); font-weight: 400; }
+.tally { margin: 14px 0 0; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 4px; }
+.tally .tnum { font: 28px/1 var(--mono); color: var(--escape); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.tally .tnum small { font-size: 15px; color: var(--muted); }
+.tally .tlab { display: block; font: 11px/1.3 var(--mono); color: var(--muted); letter-spacing: .04em; margin-top: 4px; }
+.tally .tdesc { flex: 1 1 280px; font: 12px/1.5 var(--mono); color: var(--muted); }
 .calc { margin-top: 10px; }
 .calc summary { cursor: pointer; font: 12px/1.4 var(--mono); color: var(--muted); letter-spacing: .03em; }
 .calc summary:hover, .calc[open] summary { color: var(--ink); }
@@ -98,6 +101,17 @@ a:focus-visible { outline: 2px solid var(--ember); outline-offset: 3px; border-r
 .seg button { font: 12px/1 var(--mono); color: var(--muted); background: transparent; border: 1px solid var(--line); border-radius: 999px; padding: 8px 12px; cursor: pointer; }
 .seg button[aria-pressed="true"] { color: var(--void); background: var(--ember); border-color: var(--ember); }
 .seg button:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px; }
+.seg.spacetime { margin: 0 0 12px; }
+.controls .bbc { display: grid; gap: 10px; }
+.controls .bbc[hidden], .figcap[hidden] { display: none; }
+.lbwrap { margin: 2px 0 4px; }
+#lb { display: block; width: 100%; height: 230px; border: 1px solid var(--line); border-radius: 4px; cursor: crosshair; touch-action: none; }
+.lbcap { margin: 6px 0 0; font: 11px/1.5 var(--mono); color: var(--muted); }
+.mline { margin-top: 8px; padding: 10px 12px 12px; border: 1px dashed rgba(236, 232, 224, .55); border-radius: 4px; display: grid; gap: 8px; }
+.mline label { display: flex; justify-content: space-between; gap: 10px; color: var(--ink); }
+.mline output { color: var(--ink); }
+.mline input[type=range] { width: 100%; accent-color: var(--ink); }
+.mline .hint2 { font-size: 11px; color: var(--muted); }
 
 /* body text */
 main { padding-block: 24px 8px; }
@@ -178,26 +192,46 @@ main p { text-align: left; hyphens: manual; }
     <h1 class="ptitle">Rotating black holes and what surrounds them</h1>
     <p class="author">Ho-Yun YuChih<a class="fnmark" href="#fn-contact">*</a></p>
     <p class="affil">MSc in Theoretical Physics, Peking University, Beijing, China<br>BSc in Materials Science (Physics Track), Duke Kunshan University, Kunshan, China</p>
-    <p class="received">(Received 2018; MSc completed January 2026; this page updated 21 October 2026)</p>
+    <p class="received">(Received 2018; MSc completed January 2026; this page updated 29 October 2026)</p>
   </div>
 
   <figure class="fig fig1 abstract-fig" id="abstract" aria-label="Abstract">
     <canvas id="fly" aria-hidden="true" style="position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:20"></canvas>
     <canvas id="kerr" aria-label="Equatorial plane of a Kerr black hole: horizon and ergosphere, with plasma plunging from the ISCO into the horizon. Click inside the ergosphere to set off a reconnection event."></canvas>
     <figcaption class="col">
-      <p class="figcap">Reconnection events in the ergoregion of a Kerr black hole. Click inside the green ring: a plasmoid pair is ejected, and the one that carries energy to infinity glows. Plasma follows the combined streamline of Refs. <a class="cite" href="#ref-1">[1]</a>, <a class="cite" href="#ref-4">[4]</a>.</p>
+      <div class="seg spacetime" role="group" aria-label="Spacetime">
+        <button type="button" id="g-kerr" aria-pressed="true">Kerr</button>
+        <button type="button" id="g-bb" aria-pressed="false">Einstein–bumblebee</button>
+      </div>
+      <p class="figcap" id="cap-kerr">Reconnection events in the ergoregion of a Kerr black hole. Click inside the green ring: a plasmoid pair is ejected, and the one that carries energy to infinity glows. Plasma follows the combined streamline of Refs. <a class="cite" href="#ref-1">[1]</a>, <a class="cite" href="#ref-4">[4]</a>.</p>
+      <p class="figcap" id="cap-bb" hidden>The same process in the rotating Kerr–Sen-like spacetime of Einstein–bumblebee gravity, with Lorentz-breaking parameter <i>l</i> and bumblebee charge <i>b</i>. The green ring is the equatorial ergosphere <i>r</i> = 2 − <i>b</i>, which does not depend on <i>l</i>. A larger <i>l</i> or <i>b</i> moves the horizon inward relative to it, which broadens the regions where energy extraction succeeds and moves them inward; at fixed irreducible mass, extraction is most favourable when the spacetime is marginally consistent with cosmic censorship. Ref. <a class="cite" href="#ref-3">[3]</a>. Whether the energetic plasmoid escapes to infinity has not yet been worked out for this spacetime, so a click here counts as successful under the condition of Ref. [3] alone, ε₋ &lt; 0.</p>
       <p class="doi">CV: <a href="cv.html">cv</a> · INSPIRE: <a href="https://inspirehep.net/authors?q=YuChih" target="_blank" rel="noopener">YuChih</a> · ORCID: <a href="https://orcid.org/0009-0009-4226-4438" target="_blank" rel="noopener">0009-0009-4226-4438</a></p>
 
       <p class="hint">Click inside the green ring to set off a reconnection event.</p>
       <p class="verdict-line" id="verdict" aria-live="polite"></p>
-      <p class="tally" id="tally" hidden></p>
+      <div class="tally" id="tally"></div>
       <details class="calc" id="calc">
         <summary>Show the calculation and parameters</summary>
-        <p class="cap">Details. Click the disk to place a reconnection point; each click draws a random orientation angle ξ_B, as in the covering-factor estimate. Bulk plasma follows the combined streamline used in my papers: circular outside the ISCO, then the plunging solution of Mummery &amp; Balbus (2022). The equatorial plane is drawn in orthographic projection at inclination <i>i</i> = 60°, with (<i>r</i>, <i>φ̃</i>) plotted as flat polar coordinates; photon propagation is not ray-traced, so lensing is absent. Arrows show ejection directions in the fluid frame, and the plasmoids then follow geodesics · r in GM/c²</p>
+        <p class="cap">Details. Click the disk to place a reconnection point; each click draws a random orientation angle ξ_B, as in the covering-factor estimate. Bulk plasma follows the combined streamline used in my papers: circular outside the ISCO, then the plunging solution of Mummery &amp; Balbus (2022). The equatorial plane is drawn in orthographic projection at inclination <i>i</i> = 60°, with (<i>r</i>, <i>φ̃</i>) plotted as flat polar coordinates; photon propagation is not ray-traced, so lensing is absent. Arrows show ejection directions in the fluid frame, and the plasmoids then follow geodesics. In the Einstein–bumblebee view the same construction is carried out in the Kerr–Sen-like metric of Ref. [3], with the plunging flow on the geodesic from its ISCO; success is judged by ε₋ &lt; 0 as in Ref. [3], without the escape condition of Ref. [4], which has not yet been analysed for this spacetime; <i>l</i> and <i>b</i> are limited to values for which the horizon exists, 2 − <i>b</i> ≥ 2<i>a</i>√(1 + <i>l</i>). The M_irr slider selects a contour line of irreducible mass, <i>a</i>²<i>l</i> + 2<i>M</i>²<sub>irr</sub><i>b</i> = −4<i>M</i>⁴<sub>irr</sub> + 4<i>M</i>²<sub>irr</sub> − <i>a</i>², Eq. (4.3), and (<i>l</i>, <i>b</i>) move along it · r in GM/c²</p>
         <div class="readout" id="readout"></div>
       <div class="controls">
           <label for="spin">spin a <output id="spin-out"></output></label>
           <input type="range" id="spin" min="0.5" max="0.998" step="0.001" value="0.9">
+          <div class="bbc" id="bb-ctrl" hidden>
+            <label for="lv">Lorentz-breaking parameter l <output id="lv-out"></output></label>
+            <input type="range" id="lv" min="-0.99" max="1" step="0.001" value="0.1">
+            <label for="bv">bumblebee charge b <output id="bv-out"></output></label>
+            <input type="range" id="bv" min="0" max="1.99" step="0.001" value="0.1">
+            <div class="lbwrap">
+              <canvas id="lb" aria-label="The l–b plane at the current spin: shaded where the horizon exists; its edge is the cosmic-censorship limit 2 − b = 2a√(1+l). The white dotted line is the contour line of irreducible mass; drag its point of tangency along the limit to choose it, and click or drag elsewhere to move the point along it."></canvas>
+              <div class="mline">
+                <label for="mv"><span>contour line of irreducible mass ┄ M_irr</span><output id="mv-out"></output></label>
+                <input type="range" id="mv" min="0.3" max="1" step="0.0001" value="0.65">
+                <span class="hint2">Drag ◦ along the limit, or this slider, to choose the white dotted line.</span>
+              </div>
+              <p class="lbcap">(l, b) plane at the current spin. Shaded blue: a horizon exists. Blue edge: the cosmic-censorship limit 2 − b = 2a√(1+l), beyond which the singularity is naked. Faint dashed: the closest the controls go, r̄ = √((2 − b)² − 4a²(1 + l)) = 0.03, just short of an extremal horizon. White dotted: the contour line of irreducible mass, Eq. (4.3); it is tangent to the limit at ◦, the point of Eq. (4.4), and is drawn fainter below ◦. The orange point moves along it: click or drag elsewhere on the plane, or use the l and b sliders. Ref. [3]</p>
+            </div>
+          </div>
           <label for="r0">reconnection point r₀ <output id="r0-out"></output></label>
           <input type="range" id="r0" min="1" max="2" step="0.001" value="1.8">
           <label for="xi">orientation angle ξ_B <output id="xi-out"></output></label>
@@ -310,35 +344,69 @@ scrollTo(0, 0); addEventListener('load', () => scrollTo(0, 0));
   const tok = (n, f) => css.getPropertyValue(n).trim() || f;
   const EMBER = tok('--ember', '#f0a560'), MUTED = tok('--muted', '#9b9cab'), INK = tok('--ink', '#ece8e0'), COLD = tok('--cold', '#7fb0e6'), ESC = tok('--escape', '#d8d6ff'), FALL = tok('--fall', '#e2564b'), BOUND = tok('--bound', '#e9cf9a'), ERGO = tok('--ergo', '#a6dcbc'), PLAIN = tok('--plain', '#27408f');
   // blue-white only for the plasmoid that carries extracted energy to infinity
-  const fateColor = (tr, plus) => tr.end === 'hole' ? FALL : tr.end === 'bound' ? BOUND : (plus && res.em < 0 ? ESC : PLAIN);   // deep blue: escapes, but carries no extracted energy
+  const fateColor = (tr, plus) => tr.end === 'hole' ? FALL : tr.end === 'bound' ? BOUND : (plus && res.em < 0 ? ESC : PLAIN);   // trajectories keep their real fate in both views   // deep blue: escapes, but carries no extracted energy
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // State: G = M = c = 1, equatorial plane
-  const st = { a: 0.9, r0: 1.8, ph0: -Math.PI/2, xi: 15, sig: 100, mode: 'combined' };
+  // State: G = M = c = 1, equatorial plane. g = 'kerr' or 'bb' (Kerr–Sen-like metric of Einstein–bumblebee gravity, Ref. [3])
+  const st = { a: 0.9, r0: 1.8, ph0: -Math.PI/2, xi: 15, sig: 100, mode: 'combined', g: 'kerr', l: 0.1, b: 0.1, M: null };
   let rH, rPh, rMs, rErgo = 2, TV, TR, TP, VTOT, rMax, bH;
+  // Active spacetime: LV = l, BV = b, AT = ã = a√(1+l), SQ = √(1+l). Kerr is l = b = 0.
+  let LV = 0, BV = 0, AT = 0.9, SQ = 1;
+  const RB2 = 0.03**2;   // keep r̄² = (2−b)² − 4ã² ≥ 0.03², just short of the extremal horizon (Kerr itself stops at a = 0.998)
+  const amax = (l, b) => Math.min(0.998, Math.sqrt(Math.max(0, ((2 - b)**2 - RB2) / (4*(1 + l)))));
+  const okH = (a, l, b) => (2 - b)**2 - 4*a*a*(1 + l) >= RB2 - 1e-12;
+  const rbar = () => Math.sqrt(Math.max(0, (2 - BV)**2 - 4*AT*AT));          // Eq. (3.6)
+  const Mirr = () => 0.5*Math.sqrt(2 - BV + rbar());                          // Eq. (3.5)
+  // Contour line of irreducible mass, Eq. (4.3): a² l + 2M² b = −4M⁴ + 4M² − a². The line is chosen by M_irr (st.M);
+  // the point (l, b) then moves along it, on either side of the point of tangency, Eq. (4.4).
+  let curM2 = null;
+  function pickM2() { curM2 = st.M * st.M; }
 
-  const EK = r => (r**1.5 - 2*Math.sqrt(r) + st.a) / Math.sqrt(r**3 - 3*r*r + 2*st.a*r**1.5);
-  const LK = r => (r*r - 2*st.a*Math.sqrt(r) + st.a**2) / Math.sqrt(r**3 - 3*r*r + 2*st.a*r**1.5);
+  // Equatorial metric, Eqs. (3.1)-(3.2) at θ = π/2: Σ = ρ² = r(r+b), Δ = ρ² − 2r + ã², A = (ρ²+ã²)² − ã²Δ, g_rr = (1+l)Σ/Δ
+  const rho2 = r => r*(r + BV);
+  const Dl = r => rho2(r) - 2*r + AT*AT;
+  const Aq = r => { const u = rho2(r); return (u + AT*AT)**2 - AT*AT*Dl(r); };
+  // Prograde circular geodesics from g_tt, g_tφ, g_φφ and their radial derivatives
+  function circ(r) {
+    const u = rho2(r), du = 2*r + BV, A2 = AT*AT;
+    const gtt = -1 + 2*r/u, gtp = -2*AT*r/u, gpp = u + A2 + 2*r*A2/u;
+    const dtt = -2*r*r/(u*u), dtp = 2*AT*r*r/(u*u), dpp = du - 2*A2*r*r/(u*u);
+    const Om = (-dtp + Math.sqrt(dtp*dtp - dtt*dpp)) / dpp;
+    const N = -(gtt + 2*gtp*Om + gpp*Om*Om);
+    if (!(N > 0)) return { N, E: Infinity, L: -Infinity };
+    return { N, E: -(gtt + gtp*Om)/Math.sqrt(N), L: (gtp + gpp*Om)/Math.sqrt(N) };
+  }
+  const EK = r => circ(r).E, LK = r => circ(r).L;
 
-  // Radii and the plunging streamline in ingoing Kerr coordinates (v, phi~), regular at the horizon.
+  // Radii and the plunging streamline in ingoing coordinates (v, φ~), regular at the horizon:
+  // dv = dt + √(1+l)(ρ²+ã²)/Δ dr, dφ~ = dφ + √(1+l) ã/Δ dr (ingoing Kerr coordinates when l = b = 0)
   function build() {
-    const a = st.a;
-    rH = 1 + Math.sqrt(1 - a*a);
-    rPh = 2 * (1 + Math.cos(2/3 * Math.acos(-a)));
-    const Z1 = 1 + Math.cbrt(1 - a*a) * (Math.cbrt(1 + a) + Math.cbrt(1 - a));
-    const Z2 = Math.sqrt(3*a*a + Z1*Z1);
-    rMs = 3 + Z2 - Math.sqrt((3 - Z1) * (3 + Z1 + 2*Z2));
+    const g = st.g === 'bb';
+    LV = g ? st.l : 0; BV = g ? st.b : 0; SQ = Math.sqrt(1 + LV); AT = st.a*SQ;
+    const a = AT;
+    rH = 1 - BV/2 + Math.sqrt(Math.max(0, (BV - 2)**2 - 4*a*a))/2;            // Eq. (3.3)
+    rErgo = 2 - BV;
+    // photon sphere: inner edge of the circular orbits; ISCO: minimum of E on them
+    let hi = 8, lo = 8;
+    while (lo > rH && circ(lo).N > 0) lo -= 0.002;
+    for (let k = 0; k < 60; k++) { const m = (lo + hi)/2; circ(m).N > 0 ? hi = m : lo = m; }
+    rPh = hi;
+    const dE = r => (EK(r*(1 + 1e-6)) - EK(r*(1 - 1e-6))) / (2e-6*r);
+    lo = rPh*(1 + 1e-7); hi = 14;
+    for (let k = 0; k < 70; k++) { const m = (lo + hi)/2; dE(m) < 0 ? lo = m : hi = m; }
+    rMs = (lo + hi)/2;
     // Silhouette of the horizon: an oblate spheroid whose polar/equatorial ratio is the ratio of the
-    // horizon's polar and equatorial circumferences (the Kerr horizon is intrinsically oblate)
-    let Cp = 0; for (let k = 0; k < 400; k++) { const th = (k + 0.5)/400*Math.PI; Cp += Math.sqrt(rH*rH + a*a*Math.cos(th)**2)*Math.PI/400; }
-    const q = 2*Cp / (4*Math.PI);
+    // horizon's polar and equatorial circumferences (the horizon is intrinsically oblate)
+    let Cp = 0; for (let k = 0; k < 400; k++) { const th = (k + 0.5)/400*Math.PI; Cp += Math.sqrt(rho2(rH) + a*a*Math.cos(th)**2)*Math.PI/400; }
+    const Ceq = 2*Math.PI*(rho2(rH) + a*a)/Math.sqrt(rho2(rH));
+    const q = 2*Cp / Ceq;
     bH = rH * Math.sqrt(SE*SE + q*q*(1 - SE*SE));
     const E = EK(rMs), L = LK(rMs), X = L - a*E;
     const rates = r => {
-      const D = r*r - 2*r + a*a, P = E*(r*r + a*a) - a*L;
-      const sR = Math.sqrt(Math.max(0, P*P - D*(r*r + X*X)));
-      const Q = (r*r + X*X) / (P + sR);
-      return { t: ((r*r + a*a)*Q + a*X) / (r*r), ph: (a*Q + X) / (r*r), r: -sR / (r*r) };
+      const u = rho2(r), D = Dl(r), P = E*(u + a*a) - a*L;
+      const sR = Math.sqrt(Math.max(0, P*P - D*(u + X*X)));
+      const Q = (u + X*X) / (P + sR);
+      return { t: (u + a*a)*Q + a*X, ph: a*Q + X, r: -sR/SQ };
     };
     const eps = Math.min(0.02, 0.1 * (rMs - rH));
     const n = 4000, dr = (rMs - eps - rH) / n;
@@ -350,6 +418,7 @@ scrollTo(0, 0); addEventListener('load', () => scrollTo(0, 0));
       TV.push(v); TR.push(r); TP.push(ph);
     }
     VTOT = TV[TV.length - 1];
+    if (g) pickM2(); else curM2 = null;
     rMax = Math.max(2.6, rMs * 1.18);
     const r0s = $('r0'); r0s.min = (rH + 0.005).toFixed(3); r0s.max = rErgo.toFixed(3);
     st.r0 = Math.min(Math.max(st.r0, rH + 0.005), rErgo); r0s.value = st.r0;
@@ -361,14 +430,14 @@ scrollTo(0, 0); addEventListener('load', () => scrollTo(0, 0));
     return [TR[lo] + f*(TR[hi] - TR[lo]), TP[lo] + f*(TP[hi] - TP[lo])];
   }
 
-  // Comisso-Asenjo energy at infinity per enthalpy of the two plasmoids (Shen, YuChih & Chen 2024, Eq. 2.17)
+  // Comisso-Asenjo energy at infinity per enthalpy of the two plasmoids (Shen, YuChih & Chen 2024, Eq. 2.17; YuChih & Shen 2025 for the bumblebee metric)
   function plasmoids() {
-    const a = st.a, r = st.r0;
-    const D = r*r - 2*r + a*a, A = (r*r + a*a)**2 - a*a*D;
-    const al = Math.sqrt(D*r*r/A), hr = r/Math.sqrt(D), hp = Math.sqrt(A)/r, w = 2*a*r/A, be = hp*w/al;
+    const a = AT, r = st.r0;
+    const u = rho2(r), D = Dl(r), A = Aq(r);
+    const al = Math.sqrt(D*u/A), hr = SQ*Math.sqrt(u/D), hp = Math.sqrt(A/u), w = 2*a*r/A, be = hp*w/al;
     let E, L, Ur, plunging = false;
     if (st.mode === 'combined' && r < rMs) {
-      E = EK(rMs); L = LK(rMs); Ur = -Math.sqrt(2/(3*rMs)) * Math.pow(rMs/r - 1, 1.5); plunging = true;
+      E = EK(rMs); L = LK(rMs); Ur = -Math.sqrt(Math.max(0, Rf(E, L, r))) / u; plunging = true;   // Σ U^r = −√R
     } else {
       if (r <= rPh) return { noOrbit: true };
       E = EK(r); L = LK(r); Ur = 0;
@@ -392,8 +461,8 @@ scrollTo(0, 0); addEventListener('load', () => scrollTo(0, 0));
              fate: destiny(pp), trP: trajectory(pp), trM: trajectory(pm) };
   }
 
-  // Equatorial timelike geodesics: (dr/dλ)^2 = R(r) in Mino time, dτ = r^2 dλ
-  const Rf = (E, L, r) => { const a = st.a, D = r*r - 2*r + a*a, P = E*(r*r + a*a) - a*L, X = L - a*E; return P*P - D*(r*r + X*X); };
+  // Equatorial timelike geodesics, Eq. (3.10): (dr/dλ)^2 = R(r) with dτ = Σ dλ, R = [P² − Δ(ρ² + X²)]/(1+l)
+  const Rf = (E, L, r) => { const a = AT, u = rho2(r), D = Dl(r), P = E*(u + a*a) - a*L, X = L - a*E; return (P*P - D*(u + X*X)) / (SQ*SQ); };
   const turnsOut = (E, L, r0) => { let r = r0; while (r < 2000) { r += Math.max(0.002, r*0.01); if (Rf(E, L, r) < 0) return true; } return false; };
   const turnsIn = (E, L, r0) => { for (let r = r0 - 1e-4; r > rH; r -= 0.0005) if (Rf(E, L, r) < 0) return true; return false; };
   // Fate of the ε₊ plasmoid (YuChih & Shen, Paper IV): escape, bound, or captured by the hole
@@ -404,14 +473,14 @@ scrollTo(0, 0); addEventListener('load', () => scrollTo(0, 0));
   }
   // Integrate r'' = R'(r)/2 (smooth through turning points) with RK4; record (v, r, φ~)
   function trajectory(p) {
-    const a = st.a, E = p.E, L = p.L, X = L - a*E;
+    const a = AT, E = p.E, L = p.L, X = L - a*E;
     const f = (r, pr) => {
-      const D = r*r - 2*r + a*a, P = E*(r*r + a*a) - a*L, h = 1e-5;
+      const u = rho2(r), D = Dl(r), P = E*(u + a*a) - a*L, h = 1e-5, sp = SQ*pr;
       const dR = (Rf(E, L, r + h) - Rf(E, L, r - h)) / (2*h);
-      const k = pr < 0 && P - pr > 0 ? (r*r + X*X) / (P - pr) : (P + pr) / D;   // (P + pr)/Δ, stable when infalling
-      return [pr, dR/2, a*k + X, (r*r + a*a)*k + a*X];   // dr, dpr, dφ~, dv per dλ
+      const k = sp < 0 && P - sp > 0 ? (u + X*X) / (P - sp) : (P + sp) / D;   // (P + √(1+l) pr)/Δ, stable when infalling
+      return [pr, dR/2, a*k + X, (u + a*a)*k + a*X];   // dr, dpr, dφ~, dv per dλ
     };
-    let r = st.r0, pr = st.r0*st.r0*p.ur, ph = 0, v = 0;
+    let r = st.r0, pr = rho2(st.r0)*p.ur, ph = 0, v = 0;
     const V = [0], Rr = [r], Ph = [0];
     let end = 'bound', out = false;
     for (let n = 0; n < 20000; n++) {
@@ -512,9 +581,11 @@ scrollTo(0, 0); addEventListener('load', () => scrollTo(0, 0));
   const tally = { n: 0, ok: 0 };
   function showTally() {
     const el = $('tally');
-    if (!tally.n) { el.hidden = true; return; }
-    el.hidden = false;
-    el.innerHTML = 'Energy extracted in <b>' + tally.ok + '</b> of ' + tally.n + ' clicks at a = ' + st.a.toFixed(3) + ', σ₀ = ' + (st.sig < 10 ? st.sig.toFixed(1) : Math.round(st.sig)) + '. Clicks spread evenly over the ergoregion make this fraction approach the covering factor that counts only escaping plasmoids. <a href="#paper-4">Ref. [4]</a>';
+    const pars = 'a = ' + st.a.toFixed(3) + (st.g === 'bb' ? ', l = ' + st.l.toFixed(3) + ', b = ' + st.b.toFixed(3) : '') + ', σ₀ = ' + (st.sig < 10 ? st.sig.toFixed(1) : Math.round(st.sig));
+    const head = '<span><span class="tnum">' + tally.ok + '<small> / ' + tally.n + '</small></span><span class="tlab">clicks that extract energy</span></span>';
+    if (!tally.n) { el.innerHTML = head + '<span class="tdesc">Click inside the green ring to count reconnection events at ' + pars + '.</span>'; return; }
+    el.innerHTML = head + '<span class="tdesc">At ' + pars + '. Clicks spread evenly over the ergoregion make this fraction approach ' + (st.g === 'bb' ? 'the covering factor of <a href="#paper-3">Ref. [3]</a>, which counts every event with ε₋ &lt; 0.' : 'the covering factor that counts only escaping plasmoids. <a href="#paper-4">Ref. [4]</a>') + '</span>'; return;
+    el.innerHTML = 'Energy extracted in <b>' + tally.ok + '</b> of ' + tally.n + ' clicks at a = ' + st.a.toFixed(3) + (st.g === 'bb' ? ', l = ' + st.l.toFixed(3) + ', b = ' + st.b.toFixed(3) : '') + ', σ₀ = ' + (st.sig < 10 ? st.sig.toFixed(1) : Math.round(st.sig)) + '. Clicks spread evenly over the ergoregion make this fraction approach ' + (st.g === 'bb' ? 'the covering factor of <a href="#paper-3">Ref. [3]</a>, which counts every event with ε₋ &lt; 0.' : 'the covering factor that counts only escaping plasmoids. <a href="#paper-4">Ref. [4]</a>');
   }
   const resetTally = () => { tally.n = 0; tally.ok = 0; showTally(); };
   function draw(T) {
@@ -608,7 +679,10 @@ scrollTo(0, 0); addEventListener('load', () => scrollTo(0, 0));
 
   function readout() {
     res = plasmoids();
+    try { drawLB(); } catch (err) { console.error(err); }
     $('spin-out').textContent = st.a.toFixed(3);
+    $('lv-out').textContent = st.l.toFixed(3);
+    $('bv-out').textContent = st.b.toFixed(3);
     $('r0-out').textContent = st.r0.toFixed(3);
     $('xi-out').textContent = st.xi + '°';
     $('sig-out').textContent = st.sig < 10 ? st.sig.toFixed(1) : Math.round(st.sig);
@@ -624,13 +698,15 @@ scrollTo(0, 0); addEventListener('load', () => scrollTo(0, 0));
     const fateTxt = { escape: 'escapes to infinity', bound: 'stays on a bound orbit', hole: 'falls into the hole' }[res.fate];
     let verdict, cls = '';
     if (!neg) verdict = '<b>No extraction here:</b> ε₋ &gt; 0.';
+    else if (st.g === 'bb') { verdict = '<b class="esc">Energy extracted.</b> ε₋ &lt; 0, η = ' + f(res.eta) + ' (criterion of Ref. [3]).'; cls = ' yes'; }
     else if (res.fate === 'escape') { verdict = '<b class="esc">Energy extracted.</b> ε₋ &lt; 0 falls in; ε₊ escapes with η = ' + f(res.eta) + '.'; cls = ' yes'; }
     else verdict = '<b>ε₋ &lt; 0, but the ε₊ plasmoid <span class="' + (res.fate === 'hole' ? 'fall' : '') + '">' + fateTxt + '</span>:</b> nothing reaches infinity.';
     $('verdict').innerHTML = verdict + ' <span>(ξ_B = ' + st.xi + '°)</span>';
     const tip = res.plunging
-      ? 'Plunging plasma: η peaks near ξ_B,m ≈ ' + Math.round(res.xim) + '° here, not at 0°. <a href="#paper-1">Ref. [1]</a>'
+      ? 'Plunging plasma: η peaks near ξ_B,m ≈ ' + Math.round(res.xim) + '° here' + (Math.round(res.xim) ? ', not at 0°' : '') + '. <a href="#paper-1">Ref. [1]</a>'
       : 'Circular plasma: η peaks at ξ_B = 0°. <a href="#paper-1">Ref. [1]</a>';
-    const floor = st.a < 0.8005
+    const bb = st.g === 'bb';
+    const floor = bb ? bbLine() : st.a < 0.8005
       ? 'Below a = 0.8005 the ε₊ plasmoid never escapes when ε₋ &lt; 0, at any σ₀. <a href="#paper-4">Ref. [4]</a>'
       : 'Escape of the ε₊ plasmoid is required for extraction; it sets a spin floor of a = 0.8005. <a href="#paper-4">Ref. [4]</a>';
     el.innerHTML =
@@ -638,14 +714,165 @@ scrollTo(0, 0); addEventListener('load', () => scrollTo(0, 0));
       '<span class="nums"><span>ε₊ = ' + f(res.ep) + '</span><span>ε₋ = ' + f(res.em) + '</span><span>η = ' + f(res.eta) + '</span></span>' +
       '<span>ε₊ plasmoid ' + fateTxt + '</span>' +
       '<span>' + tip + '</span>' +
-      (neg ? '<span>' + floor + '</span>' : '');
+      (neg || bb ? '<span>' + floor + '</span>' : '');
+  }
+  // (l, b) plane: horizon exists where 2 − b ≥ 2a√(1+l), Eq. (3.4); contour line of irreducible mass a² l + 2M² b = const,
+  // Eq. (4.3), tangent to the boundary at l = 4M⁴/a² − 1, b = 2 − 4M² (the point of Eq. (4.4))
+  const lbc = $('lb'), lbx = lbc.getContext('2d');
+  const L0 = -1, L1 = 1, B0 = 0, B1 = 2;
+  let lbW = 0, lbH = 0, pad = { l: 34, r: 12, t: 12, b: 26 };
+  const lx = l => pad.l + (l - L0)/(L1 - L0)*(lbW - pad.l - pad.r);
+  const by = b => lbH - pad.b - (b - B0)/(B1 - B0)*(lbH - pad.t - pad.b);
+  const xl = x => L0 + (x - pad.l)/(lbW - pad.l - pad.r)*(L1 - L0);
+  const yb = y => B0 + (lbH - pad.b - y)/(lbH - pad.t - pad.b)*(B1 - B0);
+  function drawLB() {
+    if (st.g !== 'bb' || !$('calc').open) return;
+    const d = Math.min(devicePixelRatio || 1, 2), r = lbc.getBoundingClientRect();
+    if (r.width < 10) return;
+    if (lbW !== r.width || lbH !== r.height) { lbW = r.width; lbH = r.height; lbc.width = lbW*d; lbc.height = lbH*d; }
+    const c = lbx; c.setTransform(d, 0, 0, d, 0, 0); c.clearRect(0, 0, lbW, lbH);
+    const a = st.a, lim = l => 2 - 2*a*Math.sqrt(1 + l);
+    // allowed region
+    c.beginPath(); c.moveTo(lx(L0), by(B0));
+    for (let k = 0; k <= 200; k++) { const l = L0 + (L1 - L0)*k/200; c.lineTo(lx(l), by(Math.max(B0, lim(l)))); }
+    c.lineTo(lx(L1), by(B0)); c.closePath();
+    c.fillStyle = COLD; c.globalAlpha = 0.13; c.fill(); c.globalAlpha = 1;
+    // the limit
+    c.beginPath(); let pen = false;
+    for (let k = 0; k <= 200; k++) { const l = L0 + (L1 - L0)*k/200, b = lim(l); if (b < B0) { pen = false; continue; } pen ? c.lineTo(lx(l), by(b)) : c.moveTo(lx(l), by(b)); pen = true; }
+    c.strokeStyle = COLD; c.lineWidth = 1.6; c.stroke();
+    c.beginPath(); pen = false;   // the controls stop here, r̄ = 0.03
+    for (let k = 0; k <= 200; k++) { const l = L0 + (L1 - L0)*k/200, b = 2 - Math.sqrt(4*a*a*(1 + l) + RB2); if (b < B0) { pen = false; continue; } pen ? c.lineTo(lx(l), by(b)) : c.moveTo(lx(l), by(b)); pen = true; }
+    c.setLineDash([3, 3]); c.globalAlpha = 0.45; c.lineWidth = 1; c.stroke(); c.setLineDash([]); c.globalAlpha = 1;
+    // axes
+    c.strokeStyle = MUTED; c.globalAlpha = 0.5; c.lineWidth = 1; c.strokeRect(pad.l, pad.t, lbW - pad.l - pad.r, lbH - pad.t - pad.b); c.globalAlpha = 1;
+    c.fillStyle = MUTED; c.font = '10px "JetBrains Mono", ui-monospace, monospace';
+    c.textAlign = 'center'; c.textBaseline = 'top';
+    for (const l of [-1, -0.5, 0, 0.5, 1]) c.fillText(l, lx(l), lbH - pad.b + 4);
+    c.textAlign = 'right'; c.textBaseline = 'bottom'; c.fillText('l', lbW - pad.r - 5, lbH - pad.b - 3); c.textAlign = 'center'; c.textBaseline = 'top';
+    c.textAlign = 'right'; c.textBaseline = 'middle';
+    for (const b of [0, 0.5, 1, 1.5, 2]) c.fillText(b, pad.l - 5, by(b));
+    c.textAlign = 'left'; c.fillText('b', pad.l + 5, pad.t + 9);
+    c.fillStyle = INK; c.globalAlpha = 0.6; c.textAlign = 'right'; c.fillText('naked singularity', lbW - pad.r - 8, pad.t + 12);
+    c.fillStyle = COLD; c.globalAlpha = 0.95; c.textAlign = 'left'; c.fillText('horizon', pad.l + 8, by(0.12));
+    c.globalAlpha = 1;
+    // the contour line of irreducible mass chosen with the slider, inside the allowed region
+    const M2 = curM2, lt = 4*M2*M2/(a*a) - 1, bt = 2 - 4*M2;
+    for (const upper of [true, false]) {
+      c.setLineDash(upper ? [2, 3] : [2, 4]); c.strokeStyle = INK; c.lineWidth = upper ? 1.4 : 1.1; c.globalAlpha = upper ? 0.95 : 0.4; c.beginPath(); pen = false;
+      for (let k = 0; k <= 400; k++) { const l = L0 + (L1 - L0)*k/400, b = bOn(l, st.M, a);
+        if (b < B0 || b > B1 || b > lim(l) + 1e-9 || (upper ? b < bt : b > bt)) { pen = false; continue; }
+        pen ? c.lineTo(lx(l), by(b)) : c.moveTo(lx(l), by(b)); pen = true; }
+      c.stroke();
+    }
+    c.setLineDash([]); c.globalAlpha = 1;
+    tanXY = null;
+    if (lt > L0 && lt <= L1 && bt >= B0 && bt <= B1) {   // ◦: drag it along the limit to choose the line
+      tanXY = [lx(lt), by(bt)];
+      c.fillStyle = '#0b0d13'; c.strokeStyle = INK; c.lineWidth = 2; c.beginPath(); c.arc(tanXY[0], tanXY[1], 6, 0, 2*Math.PI); c.fill(); c.stroke();
+      if (lbDrag === 'tan') { c.globalAlpha = 0.25; c.beginPath(); c.arc(tanXY[0], tanXY[1], 11, 0, 2*Math.PI); c.stroke(); c.globalAlpha = 1; }
+    }
+    // current point
+    c.fillStyle = EMBER; c.shadowColor = EMBER; c.shadowBlur = 6; c.beginPath(); c.arc(lx(st.l), by(st.b), 4, 0, 2*Math.PI); c.fill(); c.shadowBlur = 0;
+  }
+  let lbDrag = false, tanXY = null;
+  function lbPick(e) {   // the point moves along the chosen line: go to its nearest allowed point
+    const r = lbc.getBoundingClientRect(), px = e.clientX - r.left, py = e.clientY - r.top, a = st.a, M = st.M;
+    let best = Infinity, bl = st.l;
+    for (let k = 0; k <= 1500; k++) {
+      const l = -0.99 + 1.99*k/1500, b = bOn(l, M, a);
+      if (!okLB(a, l, b)) continue;
+      const d2 = (lx(l) - px)**2 + (by(b) - py)**2;
+      if (d2 < best) { best = d2; bl = l; }
+    }
+    placeL(bl); refresh();
+  }
+  function tanPick(e) {   // move ◦ to the nearest point of the limit; its b fixes M_irr, b = 2 − 4M², Eq. (4.4)
+    const r = lbc.getBoundingClientRect(), px = e.clientX - r.left, py = e.clientY - r.top, a = st.a;
+    let best = Infinity, bt = null;
+    for (let k = 0; k <= 1500; k++) {
+      const l = -0.99 + 1.99*k/1500, b = 2 - 2*a*Math.sqrt(1 + l);
+      if (b < 0 || b > 1.99) continue;
+      const d2 = (lx(l) - px)**2 + (by(b) - py)**2;
+      if (d2 < best) { best = d2; bt = b; }
+    }
+    if (bt === null) return;
+    const m = $('mv'); setM(Math.min(+m.max, Math.max(+m.min, Math.sqrt((2 - bt)/4))));
+  }
+  const nearTan = e => { if (!tanXY) return false; const r = lbc.getBoundingClientRect(); return Math.hypot(e.clientX - r.left - tanXY[0], e.clientY - r.top - tanXY[1]) < 16; };
+  lbc.addEventListener('pointerdown', e => { lbc.setPointerCapture(e.pointerId); if (nearTan(e)) { lbDrag = 'tan'; tanPick(e); } else { lbDrag = 'pt'; lbPick(e); } });
+  lbc.addEventListener('pointermove', e => {
+    if (lbDrag === 'tan') tanPick(e); else if (lbDrag === 'pt') lbPick(e);
+    else lbc.style.cursor = nearTan(e) ? 'grab' : 'crosshair';
+  });
+  lbc.addEventListener('pointerup', () => { lbDrag = false; drawLB(); });
+  lbc.addEventListener('pointercancel', () => { lbDrag = false; });
+  function bbLine() {
+    const rk = 1 + Math.sqrt(1 - st.a*st.a), rb = rbar();
+    const edge = rb < 0.13 ? 'the horizon is close to extremal: cosmic censorship is only marginally satisfied' : '2 − b ≥ 2a√(1+l) holds with r̄ = ' + rb.toFixed(3);
+    return 'r_H = ' + rH.toFixed(3) + ', r_ergo = 2 − b = ' + rErgo.toFixed(3) + ': ergoregion width ' + (rErgo - rH).toFixed(3) +
+      ' (Kerr at this a: ' + (2 - rk).toFixed(3) + '). M_irr = ' + st.M.toFixed(4) + ' (contour line, Eq. (4.3)); ' + edge + '. <a href="#paper-3">Ref. [3]</a>';
   }
 
   function sync() { setFar(); readout(); tEject = T; draw(T); }
-  $('spin').addEventListener('input', e => { st.a = +e.target.value; build(); resetTally(); sync(); });
+  // (l, b) stay where the horizon exists and on the contour line of irreducible mass chosen with the M_irr slider
+  const Cof = (M, a) => -4*M**4 + 4*M*M - a*a;
+  const bOn = (l, M, a) => (Cof(M, a) - a*a*l) / (2*M*M);
+  const okLB = (a, l, b) => l >= -0.99 - 1e-9 && l <= 1 + 1e-9 && b >= 0 && b <= 1.99 && okH(a, l, b);
+  function Mrange(a) {   // the values of M_irr whose line crosses the plotted, allowed part of the plane
+    let lo = null, hi = null;
+    for (let M = 0.05; M <= 1.2; M += 0.0005) {
+      let any = false;
+      for (let k = 0; k <= 400 && !any; k++) { const l = -0.99 + 1.99*k/400; any = okLB(a, l, bOn(l, M, a)); }
+      if (any) { if (lo === null) lo = M; hi = M; }
+    }
+    return [lo, hi];
+  }
+  function setMRange() { const [lo, hi] = Mrange(st.a), m = $('mv'); m.min = lo.toFixed(4); m.max = hi.toFixed(4); st.M = Math.min(hi, Math.max(lo, st.M)); }
+  function placeL(l) {   // put the point on the line at l, or at the nearest allowed l on it
+    const a = st.a, M = st.M;
+    l = Math.min(1, Math.max(-0.99, l));
+    if (!okLB(a, l, bOn(l, M, a))) {
+      let f = null;
+      for (let k = 1; k <= 4000 && f === null; k++) for (const x of [l - k*5e-4, l + k*5e-4]) if (f === null && okLB(a, x, bOn(x, M, a))) f = x;
+      if (f !== null) l = f;
+    }
+    st.l = l; st.b = Math.max(0, bOn(l, M, a));
+  }
+  const showLB = () => { $('lv').value = st.l; $('bv').value = st.b; if (st.M !== null) { $('mv').value = st.M; const bt = 2 - 4*st.M*st.M, lt = 4*st.M**4/(st.a*st.a) - 1;
+    $('mv-out').textContent = st.M.toFixed(4) + (bt >= 0 && lt <= 1 ? ', ◦ at (' + lt.toFixed(2) + ', ' + bt.toFixed(2) + ')' : ', ◦ off the plane'); } };
+  const refresh = () => { showLB(); build(); resetTally(); sync(); };
+  $('lv').addEventListener('input', e => { placeL(+e.target.value); refresh(); });
+  $('bv').addEventListener('input', e => { const a = st.a, M = st.M; placeL((Cof(M, a) - 2*M*M*(+e.target.value)) / (a*a)); refresh(); });
+  const ltOf = M => 4*M**4/(st.a*st.a) - 1;
+  function setM(M) {   // change the line; the point keeps its offset in l from the point of tangency, so it travels with the line
+    const dl = st.l - ltOf(st.M); st.M = M; placeL(ltOf(M) + dl); refresh();
+  }
+  $('mv').addEventListener('input', e => setM(+e.target.value));
+  const setSpin = v => { st.a = Math.min(v, 0.998); $('spin').value = st.a; };
+  $('spin').addEventListener('input', e => { setSpin(+e.target.value); if (st.g === 'bb') { setMRange(); placeL(st.l); } refresh(); });
+  const setGeom = g => {
+    st.g = g;
+    $('g-kerr').setAttribute('aria-pressed', g === 'kerr'); $('g-bb').setAttribute('aria-pressed', g === 'bb');
+    $('cap-kerr').hidden = g !== 'kerr'; $('cap-bb').hidden = g !== 'bb'; $('bb-ctrl').hidden = g !== 'bb';
+    cv.setAttribute('aria-label', g === 'bb'
+      ? 'Equatorial plane of a rotating black hole in Einstein–bumblebee gravity: horizon and ergosphere, with plasma plunging from the ISCO into the horizon. Click inside the ergosphere to set off a reconnection event.'
+      : 'Equatorial plane of a Kerr black hole: horizon and ergosphere, with plasma plunging from the ISCO into the horizon. Click inside the ergosphere to set off a reconnection event.');
+    if (g === 'bb') {
+      if (st.M === null) {   // first visit: the line through the default (l, b) whose point of tangency lies above it
+        st.a = Math.min(st.a, amax(st.l, st.b)); $('spin').value = st.a;
+        const rb = Math.sqrt(Math.max(0, (2 - st.b)**2 - 4*st.a*st.a*(1 + st.l)));
+        st.M = Math.sqrt((2 - st.b - rb)/4);
+      }
+      setMRange(); placeL(st.l);
+    }
+    refresh(); drawLB();
+  };
+  $('g-kerr').addEventListener('click', () => setGeom('kerr'));
+  $('g-bb').addEventListener('click', () => setGeom('bb'));
   $('r0').addEventListener('input', e => { st.r0 = +e.target.value; sync(); });
   $('xi').addEventListener('input', e => { st.xi = +e.target.value; $('xi-fix').checked = true; sync(); });
-  $('calc').addEventListener('toggle', () => draw(T));
+  $('calc').addEventListener('toggle', () => { draw(T); drawLB(); });
   $('sig').addEventListener('input', e => { st.sig = Math.pow(10, +e.target.value); resetTally(); sync(); });
   const setMode = m => { st.mode = m; resetTally(); $('m-comb').setAttribute('aria-pressed', m === 'combined'); $('m-circ').setAttribute('aria-pressed', m === 'circular'); sync(); };
   $('m-comb').addEventListener('click', () => setMode('combined'));
@@ -663,7 +890,7 @@ scrollTo(0, 0); addEventListener('load', () => scrollTo(0, 0));
     st.r0 = Math.min(Math.max(r, rH + 0.005), rErgo);
     if (!$('xi-fix').checked) { st.xi = Math.round(Math.random()*180 - 90); $('xi').value = st.xi; }
     $('r0').value = st.r0; sync();
-    tally.n++; if (res && !res.noOrbit && res.em < 0 && res.fate === 'escape') tally.ok++;
+    tally.n++; if (res && !res.noOrbit && res.em < 0 && (st.g === 'bb' || res.fate === 'escape')) tally.ok++;
     showTally();
   });
   cv.style.cursor = 'crosshair';
@@ -676,7 +903,7 @@ scrollTo(0, 0); addEventListener('load', () => scrollTo(0, 0));
     if (res && !res.noOrbit && T - tEject > Math.min(Math.max(res.trP.vEnd, res.trM.vEnd), 2000) + 6) tEject = T;   // eject again
     if (onScreen || flyDirty) { try { draw(T); } catch (err) { console.error(err); } }
   }
-  addEventListener('resize', () => { size(); draw(T); });
+  addEventListener('resize', () => { size(); draw(T); drawLB(); });
   if ('ResizeObserver' in window) new ResizeObserver(() => { size(); draw(T); }).observe(cv);
   st.a = +$('spin').value; st.sig = Math.pow(10, +$('sig').value); st.xi = +$('xi').value;
   build(); size(); setFar(); readout(); draw(0);
